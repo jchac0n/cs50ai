@@ -17,19 +17,49 @@ def load_data(directory):
     """
     Load data from CSV files into memory.
     """
-    # Load people
-    with open(f"{directory}/people.csv", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            people[row["id"]] = {
-                "name": row["name"],
-                "birth": row["birth"],
-                "movies": set()
-            }
-            if row["name"].lower() not in names:
-                names[row["name"].lower()] = {row["id"]}
-            else:
-                names[row["name"].lower()].add(row["id"])
+    # Load people (for small dataset)
+    try:
+        with open(fr"{directory}\people.csv", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                people[row["id"]] = {
+                    "name": row["name"],
+                    "birth": row["birth"],
+                    "movies": set()
+                }
+                if row["name"].lower() not in names:
+                    names[row["name"].lower()] = {row["id"]}
+                else:
+                    names[row["name"].lower()].add(row["id"])
+    
+    # Load people1 and people2 (for large datasets)
+    except:
+        with open(fr"{directory}\people1.csv", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                people[row["id"]] = {
+                    "name": row["name"],
+                    "birth": row["birth"],
+                    "movies": set()
+                }
+                if row["name"].lower() not in names:
+                    names[row["name"].lower()] = {row["id"]}
+                else:
+                    names[row["name"].lower()].add(row["id"])
+                    
+        # Load people2
+        with open(fr"{directory}\people2.csv", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                people[row["id"]] = {
+                    "name": row["name"],
+                    "birth": row["birth"],
+                    "movies": set()
+                }
+                if row["name"].lower() not in names:
+                    names[row["name"].lower()] = {row["id"]}
+                else:
+                    names[row["name"].lower()].add(row["id"])
 
     # Load movies
     with open(f"{directory}/movies.csv", encoding="utf-8") as f:
