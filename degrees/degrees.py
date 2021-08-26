@@ -64,7 +64,7 @@ def load_data(directory):
                     names[row["name"].lower()].add(row["id"])
 
     # Load movies
-    with open(f"{directory}/movies.csv", encoding="utf-8") as f:
+    with open(os.path.join(fr"{directory}", "movies.csv"), encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             movies[row["id"]] = {
@@ -74,7 +74,7 @@ def load_data(directory):
             }
 
     # Load stars
-    with open(f"{directory}/stars.csv", encoding="utf-8") as f:
+    with open(os.path.join(fr"{directory}", "stars.csv"), encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             try:
