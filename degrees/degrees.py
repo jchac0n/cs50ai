@@ -1,5 +1,6 @@
 import csv
 import sys
+import os
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -19,7 +20,8 @@ def load_data(directory):
     """
     # Load people (for small dataset)
     try:
-        with open(fr"{directory}\people.csv", encoding="utf-8") as f:
+        with open(os.path.join(fr"{directory}", "people.csv"), encoding="utf-8") as f:
+        #with open(fr"{directory}\people.csv", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 people[row["id"]] = {
@@ -34,7 +36,7 @@ def load_data(directory):
     
     # Load people1 and people2 (for large datasets)
     except:
-        with open(fr"{directory}\people1.csv", encoding="utf-8") as f:
+        with open(os.path.join(fr"{directory}", "people1.csv"), encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 people[row["id"]] = {
@@ -48,7 +50,7 @@ def load_data(directory):
                     names[row["name"].lower()].add(row["id"])
                     
         # Load people2
-        with open(fr"{directory}\people2.csv", encoding="utf-8") as f:
+        with open(os.path.join(fr"{directory}", "people2.csv"), encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 people[row["id"]] = {
@@ -80,7 +82,6 @@ def load_data(directory):
                 movies[row["movie_id"]]["stars"].add(row["person_id"])
             except KeyError:
                 pass
-
 
 def main():
     if len(sys.argv) > 2:
@@ -121,10 +122,67 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    #take care of bad input
+    if(source == target):
+        return []
+    
+    start = Node(state=source, parent=None, action=None)
+    frontier = QueueFrontier()
+    frontier.add(start)
+    
+    #used to store states (actors) we've already explored
+    explored = set()
+    
+    while True:
+        #we've exhausted all connections between actors and
+        #no connection found
+        if frontier.empty():
+            return None
 
-    # TODO
-    raise NotImplementedError
+        node = frontier.remove()
+        #is this next node what we are looking for?
+        #
+        # Note: code below to check if we reached our goal is from the lecture.
+        #       as suggested by the homework hint, we improve the efficiency of
+        #       the search by checking a node before adding it to the frontier.
+        #
+        #if(node.state == target):
+        #    #yes it is, let's retrace our steps through the graph
+        #    #and record what (movie, people) pairs brought us here
+        #    return get_path(node)
+        
+        #if we're here, we haven't reached our 'target' state,
+        #so let's add this node to the list of explored and move on
+        explored.add(node.state)
+        
+        #what are the other people(nodes) connected to my current actor (node)?
+        #let's get those connections and expand our graph(frontier)
+        for movie, person in neighbors_for_person(node.state):
 
+            if not frontier.contains_state(person) and person not in explored:
+                child = Node(state=person, parent=node, action=movie)
+                
+                #as we add more people to our graph, let's first check if
+                #we come across our goal
+                if(child.state == target):
+                    return get_path(child)
+
+                frontier.add(child)
+
+
+def get_path(node):
+    """
+    Returns the path taken so far to reach
+    current state(node). path is represented in (action, state) pairs
+    """
+    path = []
+    while node.parent is not None:
+        path.append((node.action, node.state))
+        node = node.parent
+        
+    path.reverse()
+    return path
+    
 
 def person_id_for_name(name):
     """
